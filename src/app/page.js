@@ -80,7 +80,7 @@ const Page = () => {
 
   return (
     <div>
-      <div
+      {/* <div
         id='box'
         className='absolute w-96 h-96 rounded-3xl bg-red-500 shadow flex justify-center items-center z-50 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]'
       >
@@ -92,7 +92,7 @@ const Page = () => {
           
         />
 
-      </div>
+      </div> */}
 
       <Section1 />
       <Section2 />
