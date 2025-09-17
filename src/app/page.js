@@ -1,103 +1,106 @@
-import Image from "next/image";
+"use client";
+import Section1 from '@/Sections/Section1';
+import Section2 from '@/Sections/Section2';
+import Section3 from '@/Sections/Section3';
+import React, { useEffect } from 'react';
+import { gsap, ScrollTrigger } from '@/utils/gsap';
+import Image from 'next/image';
+import Section4 from '@/Sections/Section4';
+import Section5 from '@/Sections/Section5';
 
-export default function Home() {
+// Ensure plugin registered (safety in case utils changes later)
+gsap.registerPlugin(ScrollTrigger);
+
+const Page = () => {
+  useEffect(() => {
+    // Guard for environments without window (shouldn't run on server because of "use client")
+    if (typeof window === 'undefined') return;
+
+    const isShortHeight = window.screen.height < 1050;
+    const mm = gsap.matchMedia();
+
+    // Desktop / large screens
+    mm.add('(min-width: 991px)', () => {
+      // Intro animation
+      gsap.from('#box', {
+        opacity: 0,
+        scale: 0,
+        duration: 1,
+        ease: 'power1.inOut'
+      });
+
+      // Sequential scroll-driven transformations inspired by main.js (#headphone)
+      gsap.to('#box', {
+        scrollTrigger: {
+          trigger: '#section2',
+          start: 'top bottom',
+          end: 'center center',
+          scrub: true,
+        },
+        y: '85vh',
+        x: '18vw',
+        rotate: 90,
+        ease: 'power1.inOut',
+        immediateRender: false
+      });
+
+      gsap.to('#box', {
+        scrollTrigger: {
+          trigger: '#section3',
+          start: 'top bottom',
+          end: 'bottom bottom',
+          scrub: true,
+        },
+        y: '218vh',
+        x: '0vw',
+        rotate: 35,
+        scale: 0.85,
+        ease: 'power1.inOut',
+        immediateRender: false
+      });
+
+
+    });
+
+    // Mobile / tablet simplified animations
+    mm.add('(max-width: 990px)', () => {
+      gsap.from('#box', {
+        opacity: 0,
+        scale: 0.7,
+        duration: 0.9,
+        ease: 'power2.out',
+        delay: 0.2
+      });
+    });
+
+    return () => {
+      mm.revert(); // kill all matchMedia animations & ScrollTriggers scoped to it
+    };
+  }, []);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div>
+      <div
+        id='box'
+        className='absolute w-96 h-96 rounded-3xl bg-red-500 shadow flex justify-center items-center z-50 top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]'
+      >
+        <Image 
+          src={"/headphone.avif"}
+          alt="Decorative"
+          className='w-full h-full object-cover rounded-3xl'
+          fill
+          
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <Section1 />
+      <Section2 />
+      <Section3 />
+      <Section4 />
+      <Section5 />
     </div>
   );
-}
+};
+
+export default Page;
