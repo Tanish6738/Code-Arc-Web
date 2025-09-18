@@ -97,7 +97,7 @@ const Page = () => {
   window.addEventListener("resize", ScrollTrigger.refresh);
   refreshPositionsRef = refreshPositions;
 
-      // Section 5 continuation: move row into a right-side vertical column
+      // Section 3: arrange boxes into a centered 2x2 grid
       const tl5 = gsap.timeline({
         defaults: { ease: "Power1.ease" },
         scrollTrigger: {
@@ -112,16 +112,25 @@ const Page = () => {
         },
       });
 
-      const rightMargin = 16; // 1rem from right
-      const calcColumnPositions = () => {
-        const leftX = vw() - rightMargin - boxWidth; // left coordinate for the column
-        const totalHeight = 4 * boxWidth + 3 * gap;
-        const startY = (vh() - totalHeight) / 2; // vertically center the column
+      // Compute 2x2 grid positions right-aligned in the viewport (no scale change)
+      const calc2x2Positions = () => {
+        // Use current rendered size to respect any prior transforms
+        const ref = document.querySelector("#box-tl");
+        const sw = ref ? ref.getBoundingClientRect().width : boxWidth;
+        const sh = ref ? ref.getBoundingClientRect().height : boxWidth;
+
+        const totalWidth = 2 * sw + gap;
+        const totalHeight = 2 * sh + gap;
+        const rightMargin = 64; // 1rem from right edge
+        const startX = vw() - rightMargin - totalWidth; // right-aligned
+        const startY = (vh() - totalHeight) / 2;
+
         return [
-          { x: leftX, y: startY + 0 * (boxWidth + gap) },
-          { x: leftX, y: startY + 1 * (boxWidth + gap) },
-          { x: leftX, y: startY + 2 * (boxWidth + gap) },
-          { x: leftX, y: startY + 3 * (boxWidth + gap) },
+          // top-left, top-right, bottom-left, bottom-right
+          { x: startX, y: startY },
+          { x: startX + sw + gap, y: startY },
+          { x: startX, y: startY + sh + gap },
+          { x: startX + sw + gap, y: startY + sh + gap },
         ];
       };
 
@@ -148,7 +157,7 @@ const Page = () => {
       };
 
       const refreshPositions5 = () => {
-        const positions = calcColumnPositions();
+        const positions = calc2x2Positions();
         tl5.clear();
         applyToBox5("#box-tl", positions[0].x, positions[0].y);
         applyToBox5("#box-tr", positions[1].x, positions[1].y);
