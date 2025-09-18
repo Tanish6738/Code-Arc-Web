@@ -7,7 +7,7 @@ const Section2 = () => {
   return (
     <section
       id='section2'
-      className='relative h-screen w-full flex flex-col md:flex-row overflow-hidden bg-emerald-400 border-b border-white/10'
+      className='relative h-screen w-full flex flex-col md:flex-row overflow-hidden'
     >
 
     </section>

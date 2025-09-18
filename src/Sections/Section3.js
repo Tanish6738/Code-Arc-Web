@@ -5,7 +5,7 @@ const Section3 = () => {
     <div
 
         id='section3'
-            className='relative h-screen w-full flex flex-col md:flex-row overflow-hidden bg-slate-950 border-b border-white/10'
+            className='relative h-screen w-full flex flex-col md:flex-row overflow-hidden bg-black border-b border-white/10'
     >
       {/* Left content */}
       <div

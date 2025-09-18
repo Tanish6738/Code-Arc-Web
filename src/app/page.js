@@ -334,7 +334,7 @@ const Page = () => {
       >
         <div
           id="box-tl"
-          className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl bg-red-500 shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
           <Image 
           className=" object-cover rounded-3xl"
@@ -342,7 +342,7 @@ const Page = () => {
         </div>
         <div
           id="box-tr"
-          className="pointer-events-auto absolute top-4 right-4 w-72 h-72 rounded-3xl bg-blue-500 shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute top-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
           <Image 
           className=" object-cover rounded-3xl"
@@ -350,7 +350,7 @@ const Page = () => {
         </div>
         <div
           id="box-bl"
-          className="pointer-events-auto absolute bottom-4 left-4 w-72 h-72 rounded-3xl bg-green-500 shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute bottom-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
           <Image 
           className=" object-cover rounded-3xl"
@@ -358,7 +358,7 @@ const Page = () => {
         </div>
         <div
           id="box-br"
-          className="pointer-events-auto absolute bottom-4 right-4 w-72 h-72 rounded-3xl bg-rose-500 shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute bottom-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
           <Image 
           className=" object-cover rounded-3xl"

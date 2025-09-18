@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${jetBrains.variable} antialiased bg-slate-950 text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} ${jetBrains.variable} antialiased bg-black text-white`}
       >
         <SmoothScrolling>
           {children}

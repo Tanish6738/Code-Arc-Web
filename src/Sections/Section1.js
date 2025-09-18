@@ -9,7 +9,7 @@ const Section1 = () => {
   return (
     <div
       id="section1"
-      className="h-screen w-full flex justify-center items-center bg-slate-950 text-white select-none"
+      className="h-screen w-full flex justify-center items-center bg-black text-white select-none"
     >
       <div className="flex flex-col justify-center items-center gap-8 px-4 text-center">
         <h1
