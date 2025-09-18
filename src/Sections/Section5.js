@@ -21,8 +21,8 @@ const Section5 = () => {
   };
 
   return (
-    <section id="section5" className="relative min-h-[100svh] w-full bg-black text-white">
-      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+    <section id="section5" className="relative min-h-[100svh] w-full bg-black text-white scroll-mt-24 sm:scroll-mt-28 md:scroll-mt-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
         {/* Heading */}
         <div className="max-w-3xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">
@@ -34,7 +34,7 @@ const Section5 = () => {
         </div>
 
         {/* Layout with left spacer for the animated boxes column */}
-        <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 items-start">
+  <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 items-start">
           {/* Left spacer: matches scaled box width (w-72 at 0.5 scale => ~9rem) plus margin. */}
           <div aria-hidden className="hidden md:block w-48 md:w-56 shrink-0" />
 
@@ -50,7 +50,7 @@ const Section5 = () => {
                     type="text"
                     value={form.name}
                     onChange={onChange}
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30 touch-manipulation"
                     placeholder="Your name"
                     autoComplete="name"
                   />
@@ -63,7 +63,7 @@ const Section5 = () => {
                     type="email"
                     value={form.email}
                     onChange={onChange}
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30 touch-manipulation"
                     placeholder="you@example.com"
                     autoComplete="email"
                   />
@@ -78,7 +78,7 @@ const Section5 = () => {
                   type="text"
                   value={form.subject}
                   onChange={onChange}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30 touch-manipulation"
                   placeholder="How can we help?"
                 />
               </div>
@@ -91,7 +91,7 @@ const Section5 = () => {
                   rows={6}
                   value={form.message}
                   onChange={onChange}
-                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30 resize-y"
+                  className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30 resize-y touch-manipulation"
                   placeholder="Tell us a bit about your idea or request..."
                 />
               </div>

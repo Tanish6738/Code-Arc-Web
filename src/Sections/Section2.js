@@ -53,9 +53,9 @@ const Section2 = () => {
     <section
       id="section2"
       ref={sectionRef}
-      className="relative min-h-[100svh] w-full overflow-hidden"
+      className="relative min-h-[100svh] w-full overflow-hidden scroll-mt-24 sm:scroll-mt-28 md:scroll-mt-32"
     >
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24 h-full flex flex-col">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-14 sm:py-20 md:py-24 h-full flex flex-col">
         {/* Title */}
         <div id="features-heading" className="max-w-3xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">

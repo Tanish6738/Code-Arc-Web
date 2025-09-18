@@ -14,6 +14,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function HomeClient() {
   useEffect(() => {
+    // Skip initializing box animations on small screens
+    if (typeof window !== "undefined" && !window.matchMedia("(min-width: 768px)").matches) {
+      return;
+    }
     // Animate the 4 corner boxes into a centered inline row while scrolling
     // Hold references to refresh handlers so we can remove listeners on cleanup
     let refreshPositionsRef;
@@ -366,7 +370,7 @@ export default function HomeClient() {
 
   return (
     <div>
-      <div id="boxes" className="fixed inset-0 z-50 select-none pointer-events-none">
+      <div id="boxes" className="hidden md:block fixed inset-0 z-50 select-none pointer-events-none">
         <div
           id="box-tl"
           className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"

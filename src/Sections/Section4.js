@@ -5,9 +5,9 @@ const Section4 = () => {
   return (
     <section
       id="section4"
-      className="relative min-h-[100svh] w-full bg-black text-white"
+      className="relative min-h-[100svh] w-full bg-black text-white scroll-mt-24 sm:scroll-mt-28 md:scroll-mt-32"
     >
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-14 sm:py-20 md:py-24">
         {/* Heading */}
         <div className="max-w-3xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">
@@ -18,7 +18,7 @@ const Section4 = () => {
           </p>
         </div>
 
-        {/* Content flanking the center where animated boxes sit */}
+    {/* Content flanking the center where animated boxes sit */}
   <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-start gap-6 sm:gap-8 md:gap-10">
           {/* Left column */}
           <div className="flex-1 space-y-4 md:space-y-5">
