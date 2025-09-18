@@ -16,10 +16,12 @@ const Section1 = () => {
           className="hero-title font-bold font-display tracking-wide"
           aria-label={WORD}
         >
-         CODEARC
+          CODEARC
         </h1>
-        <p className="max-w-xl text-slate-300 font-tech text-base md:text-lg leading-relaxed">
-          Revolutionize the way you code, share, and collaborate.
+        <p className="max-w-2xl text-slate-300 font-tech text-base md:text-lg leading-relaxed">
+          CodeARC is the all-in-one developer platform that goes beyond simple snippet storage—
+          organize code with a hierarchical directory structure, collaborate with your team, and
+          supercharge productivity using built-in AI tools.
         </p>
       </div>
       <style jsx>{`
@@ -35,7 +37,7 @@ const Section1 = () => {
           color: transparent;
           animation: gradientShift 8s ease-in-out infinite;
           filter: drop-shadow(0 0 12px rgba(56,189,248,0.12));
-          white-space: nowrap;
+          white-space: normal;
         }
         .hero-letter {
           display: inline-block;

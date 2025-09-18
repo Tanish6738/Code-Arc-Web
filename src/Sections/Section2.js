@@ -10,7 +10,7 @@ const features = [
   "📝 Smart Snippet Management – Version history, syntax highlighting, and lightning-fast search.",
   "👥 Team Collaboration & Permissions – Real-time collaboration with role-based access and activity tracking.",
   "🤖 AI-Powered Tools – Generate, explain, analyze, and convert code with integrated AI.",
- ];
+];
 
 const Section2 = () => {
   const sectionRef = useRef(null);
@@ -73,24 +73,33 @@ const Section2 = () => {
           className="pointer-events-none my-8 md:my-10 h-72 w-full"
         />
 
-        {/* Features grid */}
-        <div id="features-grid" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6 mt-auto">
-          {features.map((text, idx) => (
-            <div
-              key={idx}
-              className="feature-card group rounded-2xl border border-white bg-black transition-colors duration-300 p-5 md:p-6 backdrop-blur-sm tech-grid-bg"
-            >
-              <div className="flex items-start gap-3">
-                <div className="shrink-0 h-9 w-9 rounded-lg bg-white/10 grid place-items-center">
-                  <span className="text-lg">{text.slice(0, 2)}</span>
+        {/* Features grid as semantic list */}
+        <ul id="features-grid" role="list" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6 mt-auto">
+          {features.map((text, idx) => {
+            const content = text.slice(2);
+            const [title, ...rest] = content.split(" – ");
+            const desc = rest.join(" – ");
+            return (
+              <li
+                key={idx}
+                role="listitem"
+                className="feature-card group rounded-2xl border border-white bg-black transition-colors duration-300 p-5 md:p-6 backdrop-blur-sm tech-grid-bg"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 h-9 w-9 rounded-lg bg-white/10 grid place-items-center">
+                    <span className="text-lg">{text.slice(0, 2)}</span>
+                  </div>
+                  <div>
+                    <h3 className="text-base md:text-lg font-semibold text-white">{title}</h3>
+                    {desc && (
+                      <p className="mt-1 text-sm md:text-base leading-relaxed text-white/90">{desc}</p>
+                    )}
+                  </div>
                 </div>
-                <p className="text-sm md:text-base leading-relaxed text-white/90">
-                  {text.slice(2)}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );

@@ -11,10 +11,10 @@ const Section4 = () => {
         {/* Heading */}
         <div className="max-w-3xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">
-            Working Section
+            How CodeARC Works
           </h2>
           <p className="mt-2 text-sm md:text-base text-white/70 font-tech">
-            How it works
+            A streamlined workflow from organizing snippets to collaborating and shipping with AI.
           </p>
         </div>
 
