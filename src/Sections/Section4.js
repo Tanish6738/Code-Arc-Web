@@ -6,7 +6,7 @@ const Section4 = () => {
 
         id='section4'
         className='h-screen w-full flex justify-center items-center text-4xl font-bold bg-green-400'
-    >Section4</div>
+    ></div>
   )
 }
 
