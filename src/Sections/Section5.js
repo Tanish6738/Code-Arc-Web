@@ -21,7 +21,7 @@ const Section5 = () => {
   };
 
   return (
-    <section id="section5" className="relative min-h-[100svh] w-full bg-black text-white scroll-mt-24 sm:scroll-mt-28 md:scroll-mt-32">
+    <section id="section5" className="relative md:min-h-[100svh] w-full bg-black text-white scroll-mt-24 sm:scroll-mt-28 md:scroll-mt-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
         {/* Heading */}
         <div className="max-w-3xl">
@@ -33,13 +33,10 @@ const Section5 = () => {
           </p>
         </div>
 
-        {/* Layout with left spacer for the animated boxes column */}
-  <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 items-start">
-          {/* Left spacer: matches scaled box width (w-72 at 0.5 scale => ~9rem) plus margin. */}
-          <div aria-hidden className="hidden md:block w-48 md:w-56 shrink-0" />
-
-          {/* Contact form on the right */}
-          <div className="flex-1">
+        {/* Centered form layout */}
+        <div className="mt-10 md:mt-14 flex items-center justify-center">
+          {/* Contact form */}
+          <div className="w-full max-w-2xl mx-auto">
             <form onSubmit={onSubmit} className="space-y-4 md:space-y-5 max-w-2xl w-full">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

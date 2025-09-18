@@ -57,7 +57,7 @@ const Section2 = () => {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-14 sm:py-20 md:py-24 h-full flex flex-col">
         {/* Title */}
-        <div id="features-heading" className="max-w-3xl">
+        <div id="features-heading" className="max-w-3xl py-4 ">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">
             Key Features
           </h2>
@@ -70,7 +70,7 @@ const Section2 = () => {
         {/* Central safe area reserved for animated boxes row (w-72 boxes => ~18rem tall) */}
         <div
           aria-hidden
-          className="pointer-events-none my-6 sm:my-8 md:my-10 h-40 sm:h-56 md:h-72 w-full"
+          className="hidden sm:block pointer-events-none sm:my-8 md:my-10 sm:h-56 md:h-72 w-full"
         />
 
         {/* Features grid as semantic list */}
