@@ -5,7 +5,7 @@ const Section4 = () => {
   return (
     <section
       id="section4"
-      className="relative min-h-screen w-full bg-black text-white"
+      className="relative min-h-[100svh] w-full bg-black text-white"
     >
       <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24">
         {/* Heading */}
@@ -19,7 +19,7 @@ const Section4 = () => {
         </div>
 
         {/* Content flanking the center where animated boxes sit */}
-        <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-start gap-8 md:gap-10">
+  <div className="mt-10 md:mt-14 flex flex-col md:flex-row md:items-start gap-6 sm:gap-8 md:gap-10">
           {/* Left column */}
           <div className="flex-1 space-y-4 md:space-y-5">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5 md:p-6">
@@ -45,7 +45,7 @@ const Section4 = () => {
           {/* Center spacer to keep room for the animated boxes (visible on md+) */}
           <div
             aria-hidden
-            className="hidden md:block w-96 shrink-0"
+            className="hidden md:block w-80 lg:w-96 shrink-0"
           />
 
           {/* Right column */}

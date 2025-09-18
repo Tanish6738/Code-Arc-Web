@@ -53,7 +53,7 @@ const Section2 = () => {
     <section
       id="section2"
       ref={sectionRef}
-      className="relative min-h-screen w-full overflow-hidden"
+      className="relative min-h-[100svh] w-full overflow-hidden"
     >
       <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24 h-full flex flex-col">
         {/* Title */}
@@ -70,11 +70,11 @@ const Section2 = () => {
         {/* Central safe area reserved for animated boxes row (w-72 boxes => ~18rem tall) */}
         <div
           aria-hidden
-          className="pointer-events-none my-8 md:my-10 h-72 w-full"
+          className="pointer-events-none my-6 sm:my-8 md:my-10 h-40 sm:h-56 md:h-72 w-full"
         />
 
         {/* Features grid as semantic list */}
-        <ul id="features-grid" role="list" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6 mt-auto">
+        <ul id="features-grid" role="list" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mt-auto">
           {features.map((text, idx) => {
             const content = text.slice(2);
             const [title, ...rest] = content.split(" – ");

@@ -21,8 +21,8 @@ const Section5 = () => {
   };
 
   return (
-    <section id="section5" className="relative min-h-screen w-full bg-black text-white">
-      <div className="mx-auto max-w-7xl px-6 ">
+    <section id="section5" className="relative min-h-[100svh] w-full bg-black text-white">
+      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
         {/* Heading */}
         <div className="max-w-3xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">
@@ -34,13 +34,13 @@ const Section5 = () => {
         </div>
 
         {/* Layout with left spacer for the animated boxes column */}
-        <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-8 md:gap-10 items-start">
+        <div className="mt-10 md:mt-14 flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 items-start">
           {/* Left spacer: matches scaled box width (w-72 at 0.5 scale => ~9rem) plus margin. */}
-          <div aria-hidden className="w-48 md:w-56 shrink-0" />
+          <div aria-hidden className="hidden md:block w-48 md:w-56 shrink-0" />
 
           {/* Contact form on the right */}
           <div className="flex-1">
-            <form onSubmit={onSubmit} className="space-y-4 md:space-y-5 max-w-2xl">
+            <form onSubmit={onSubmit} className="space-y-4 md:space-y-5 max-w-2xl w-full">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm mb-1 text-white/80">Name</label>
@@ -108,7 +108,7 @@ const Section5 = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="inline-flex hover:cursor-pointer items-center justify-center rounded-xl bg-white text-black px-5 py-2.5 font-medium hover:bg-white/90 transition-colors"
+                  className="inline-flex w-full sm:w-auto hover:cursor-pointer items-center justify-center rounded-xl bg-white text-black px-5 py-2.5 font-medium hover:bg-white/90 transition-colors"
                 >
                   Send message
                 </button>
