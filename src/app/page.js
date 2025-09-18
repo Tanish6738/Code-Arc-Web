@@ -20,12 +20,7 @@ const Page = () => {
     let refreshPositions4Ref;
 
     const ctx = gsap.context(() => {
-      const boxes = [
-        "#box-tl",
-        "#box-tr",
-        "#box-bl",
-        "#box-br",
-      ];
+      const boxes = ["#box-tl", "#box-tr", "#box-bl", "#box-br"];
 
       // Ensure elements exist before creating ScrollTrigger
       if (!boxes.every((sel) => document.querySelector(sel))) return;
@@ -73,8 +68,10 @@ const Page = () => {
         tl.to(
           selector,
           {
-            x: () => x - document.querySelector(selector).getBoundingClientRect().left,
-            y: () => y - document.querySelector(selector).getBoundingClientRect().top,
+            x: () =>
+              x - document.querySelector(selector).getBoundingClientRect().left,
+            y: () =>
+              y - document.querySelector(selector).getBoundingClientRect().top,
           },
           0
         );
@@ -91,11 +88,11 @@ const Page = () => {
         applyToBox("#box-br", x4, y);
       };
 
-  refreshPositions();
-  // Recompute on resize/refresh
-  ScrollTrigger.addEventListener("refreshInit", refreshPositions);
-  window.addEventListener("resize", ScrollTrigger.refresh);
-  refreshPositionsRef = refreshPositions;
+      refreshPositions();
+      // Recompute on resize/refresh
+      ScrollTrigger.addEventListener("refreshInit", refreshPositions);
+      window.addEventListener("resize", ScrollTrigger.refresh);
+      refreshPositionsRef = refreshPositions;
 
       // Section 3: arrange boxes into a centered 2x2 grid
       const tl5 = gsap.timeline({
@@ -165,9 +162,9 @@ const Page = () => {
         applyToBox5("#box-br", positions[3].x, positions[3].y);
       };
 
-  refreshPositions5();
-  ScrollTrigger.addEventListener("refreshInit", refreshPositions5);
-  refreshPositions5Ref = refreshPositions5;
+      refreshPositions5();
+      ScrollTrigger.addEventListener("refreshInit", refreshPositions5);
+      refreshPositions5Ref = refreshPositions5;
 
       // Ensure the animation doesn't continue past Section 4 by scoping to the ScrollTrigger range only
       // The scrubbed tween only progresses between start and end; outside range it's clamped by ScrollTrigger.
@@ -331,25 +328,42 @@ const Page = () => {
   }, []);
   return (
     <div>
-
-
-      <div id="boxes" className="fixed inset-0 z-50 select-none pointer-events-none">
+      <div
+        id="boxes"
+        className="fixed inset-0 z-50 select-none pointer-events-none"
+      >
         <div
           id="box-tl"
           className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl bg-red-500 shadow-lg flex justify-center items-center"
-        ></div>
+        >
+          <Image 
+          className=" object-cover rounded-3xl"
+          src="/1.png" fill alt="1.png" />
+        </div>
         <div
           id="box-tr"
           className="pointer-events-auto absolute top-4 right-4 w-72 h-72 rounded-3xl bg-blue-500 shadow-lg flex justify-center items-center"
-        ></div>
+        >
+          <Image 
+          className=" object-cover rounded-3xl"
+          src="/2.png" fill alt="2.png" />
+        </div>
         <div
           id="box-bl"
           className="pointer-events-auto absolute bottom-4 left-4 w-72 h-72 rounded-3xl bg-green-500 shadow-lg flex justify-center items-center"
-        ></div>
+        >
+          <Image 
+          className=" object-cover rounded-3xl"
+          src="/3.png" fill alt="3.png" />
+        </div>
         <div
           id="box-br"
           className="pointer-events-auto absolute bottom-4 right-4 w-72 h-72 rounded-3xl bg-rose-500 shadow-lg flex justify-center items-center"
-        ></div>
+        >
+          <Image 
+          className=" object-cover rounded-3xl"
+          src="/4.png" fill alt="4.png" />
+        </div>
       </div>
       <Section1 />
       <Section2 />
