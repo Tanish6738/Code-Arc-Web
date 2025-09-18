@@ -7,6 +7,7 @@ import { gsap, ScrollTrigger } from "@/utils/gsap";
 import Image from "next/image";
 import Section4 from "@/Sections/Section4";
 import Section5 from "@/Sections/Section5";
+import Footer from "@/components/Footer";
 
 // Ensure plugin registered (safety in case utils changes later)
 gsap.registerPlugin(ScrollTrigger);
@@ -246,10 +247,9 @@ const Page = () => {
       ScrollTrigger.addEventListener("refreshInit", refreshPositions4);
       refreshPositions4Ref = refreshPositions4;
 
-      // Section 5: move into a left-side vertical column (mirrors Section 3's right column)
-      const tl5Left = gsap.timeline({
+      // Section 5: two columns — 1 box on the left, 3 stacked on the right
+      const tl5TwoCol = gsap.timeline({
         defaults: { ease: "Power1.ease" },
-
         scrollTrigger: {
           trigger: "#section5",
           start: "top 50%",
@@ -260,24 +260,57 @@ const Page = () => {
         },
       });
 
-      const leftMargin = 16; // 1rem from left
-      const calcLeftColumnPositions = () => {
+      // Compute responsive positions aligned to the content container edges
+      const calcOneLeftThreeRightPositions = () => {
         const ref = document.querySelector("#box-tl");
-        // Use current rendered width to respect any active scale from previous sections
+        // Respect current scale from previous sections
         const sw = ref ? ref.getBoundingClientRect().width : boxWidth * 0.5;
-        const leftX = leftMargin;
-        const totalHeight = 4 * sw + 3 * gap;
-        const startY = (vh() - totalHeight) / 2;
-        return [
-          { x: leftX, y: startY + 0 * (sw + gap) },
-          { x: leftX, y: startY + 1 * (sw + gap) },
-          { x: leftX, y: startY + 2 * (sw + gap) },
-          { x: leftX, y: startY + 3 * (sw + gap) },
-        ];
+        const maxW = 1280; // ~ tailwind max-w-7xl
+        const pad = window.innerWidth >= 768 ? 40 : 24; // md:px-10 vs px-6
+        const containerInset = (vw() - Math.min(vw(), maxW)) / 2;
+        const leftContentX = Math.max(0, containerInset + pad);
+
+        // If we have an outer margin (containerInset > 0), place right column in that margin so it doesn't cover the form.
+        // Otherwise (narrow screens), we'll fallback to a single left stack to avoid overlap.
+        const hasOuterMargin = containerInset > 0;
+        const rightEdgeMargin = 16; // small gap from container edge/viewport
+        const rightColumnXInMargin = vw() - containerInset - sw - rightEdgeMargin;
+
+        // Right column: three stacked boxes, vertically centered in viewport
+        const totalRightH = 3 * sw + 2 * gap;
+        const startRightY = (vh() - totalRightH) / 2;
+
+        if (hasOuterMargin) {
+          const rightContentX = rightColumnXInMargin;
+          const rightY = [
+            startRightY,
+            startRightY + (sw + gap),
+            startRightY + 2 * (sw + gap),
+          ];
+          const leftY = startRightY + (totalRightH - sw) / 2;
+          return {
+            mode: "two-col",
+            left: { x: leftContentX, y: leftY },
+            rightTop: { x: rightContentX, y: rightY[0] },
+            rightMid: { x: rightContentX, y: rightY[1] },
+            rightBot: { x: rightContentX, y: rightY[2] },
+          };
+        }
+
+        // Fallback (no outer margin): stack all 4 on the left to keep form readable
+        const totalLeftH = 4 * sw + 3 * gap;
+        const startLeftY = (vh() - totalLeftH) / 2;
+        return {
+          mode: "left-stack",
+          l1: { x: leftContentX, y: startLeftY + 0 * (sw + gap) },
+          l2: { x: leftContentX, y: startLeftY + 1 * (sw + gap) },
+          l3: { x: leftContentX, y: startLeftY + 2 * (sw + gap) },
+          l4: { x: leftContentX, y: startLeftY + 3 * (sw + gap) },
+        };
       };
 
-      const applyToBox5Left = (selector, x, y) => {
-        tl5Left.to(
+      const applyToBox5TwoCol = (selector, x, y) => {
+        tl5TwoCol.to(
           selector,
           {
             x: () => {
@@ -292,24 +325,33 @@ const Page = () => {
               const dy = y - rect.top;
               return `+=${dy}`;
             },
-            scale: 1,
+            scale: .7,
+            transformOrigin: "top left",
           },
           0
         );
       };
 
-      const refreshPositions5Left = () => {
-        const positions = calcLeftColumnPositions();
-        tl5Left.clear();
-        applyToBox5Left("#box-tl", positions[0].x, positions[0].y);
-        applyToBox5Left("#box-tr", positions[1].x, positions[1].y);
-        applyToBox5Left("#box-bl", positions[2].x, positions[2].y);
-        applyToBox5Left("#box-br", positions[3].x, positions[3].y);
+      const refreshPositions5TwoCol = () => {
+        const pos = calcOneLeftThreeRightPositions();
+        tl5TwoCol.clear();
+        if (pos.mode === "two-col") {
+          applyToBox5TwoCol("#box-tl", pos.left.x, pos.left.y);
+          applyToBox5TwoCol("#box-tr", pos.rightTop.x, pos.rightTop.y);
+          applyToBox5TwoCol("#box-bl", pos.rightMid.x, pos.rightMid.y);
+          applyToBox5TwoCol("#box-br", pos.rightBot.x, pos.rightBot.y);
+        } else {
+          // left-stack fallback for narrow screens
+          applyToBox5TwoCol("#box-tl", pos.l1.x, pos.l1.y);
+          applyToBox5TwoCol("#box-tr", pos.l2.x, pos.l2.y);
+          applyToBox5TwoCol("#box-bl", pos.l3.x, pos.l3.y);
+          applyToBox5TwoCol("#box-br", pos.l4.x, pos.l4.y);
+        }
       };
 
-      refreshPositions5Left();
-      ScrollTrigger.addEventListener("refreshInit", refreshPositions5Left);
-      refreshPositions5Ref = refreshPositions5Left;
+      refreshPositions5TwoCol();
+      ScrollTrigger.addEventListener("refreshInit", refreshPositions5TwoCol);
+      refreshPositions5Ref = refreshPositions5TwoCol;
     });
 
     return () => {
@@ -370,6 +412,7 @@ const Page = () => {
       <Section3 />
       <Section4 />
       <Section5 />
+      <Footer />
     </div>
   );
 };

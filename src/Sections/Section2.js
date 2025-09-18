@@ -1,15 +1,97 @@
 "use client";
-import React, { useEffect, useRef } from 'react';
-import { gsap, ScrollTrigger } from '@/utils/gsap';
+import React, { useEffect, useRef } from "react";
+import { gsap, ScrollTrigger } from "@/utils/gsap";
+
+// Ensure plugin is registered (safe if already registered elsewhere)
+gsap.registerPlugin(ScrollTrigger);
+
+const features = [
+  "📂 Hierarchical Directory Structure – Organize snippets and projects in clean, tree-based directories.",
+  "📝 Smart Snippet Management – Version history, syntax highlighting, and lightning-fast search.",
+  "👥 Team Collaboration & Permissions – Real-time collaboration with role-based access and activity tracking.",
+  "🤖 AI-Powered Tools – Generate, explain, analyze, and convert code with integrated AI.",
+ ];
 
 const Section2 = () => {
-  
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Fade+slide the heading group
+      gsap.from("#features-heading", {
+        opacity: 0,
+        y: 24,
+        duration: 0.6,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: "#features-heading",
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      // Stagger reveal feature cards
+      const cards = gsap.utils.toArray(".feature-card");
+      gsap.from(cards, {
+        opacity: 0,
+        y: 24,
+        duration: 0.5,
+        ease: "power2.out",
+        stagger: 0.08,
+        scrollTrigger: {
+          trigger: "#features-grid",
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
-      id='section2'
-      className='relative h-screen w-full flex flex-col md:flex-row overflow-hidden'
+      id="section2"
+      ref={sectionRef}
+      className="relative min-h-screen w-full overflow-hidden"
     >
+      <div className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24 h-full flex flex-col">
+        {/* Title */}
+        <div id="features-heading" className="max-w-3xl">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold tracking-tight">
+            Key Features
+          </h2>
+          <p className="mt-3 text-sm md:text-base text-white/70 font-tech">
+            Everything you need to capture ideas, collaborate, and ship faster — designed for
+            developers, teams, and creators.
+          </p>
+        </div>
 
+        {/* Central safe area reserved for animated boxes row (w-72 boxes => ~18rem tall) */}
+        <div
+          aria-hidden
+          className="pointer-events-none my-8 md:my-10 h-72 w-full"
+        />
+
+        {/* Features grid */}
+        <div id="features-grid" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 md:gap-6 mt-auto">
+          {features.map((text, idx) => (
+            <div
+              key={idx}
+              className="feature-card group rounded-2xl border border-white bg-black transition-colors duration-300 p-5 md:p-6 backdrop-blur-sm tech-grid-bg"
+            >
+              <div className="flex items-start gap-3">
+                <div className="shrink-0 h-9 w-9 rounded-lg bg-white/10 grid place-items-center">
+                  <span className="text-lg">{text.slice(0, 2)}</span>
+                </div>
+                <p className="text-sm md:text-base leading-relaxed text-white/90">
+                  {text.slice(2)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   );
 };
