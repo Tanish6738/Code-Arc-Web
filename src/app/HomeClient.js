@@ -16,18 +16,39 @@ export default function HomeClient() {
   const [loading, setLoading] = useState(true);
   const loaderTlRef = useRef(null);
   const loaderRef = useRef(null);
+  const [progress, setProgress] = useState(0); // 0 - 100
 
   // Initial 2s loading animation (independent of scroll) using the real corner boxes
   useEffect(() => {
     if (!loading) return;
     // Use a broad context (document) so we can target fixed-position boxes
     const ctx = gsap.context(() => {
+      const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
+      // On mobile: run only a counting animation 0 -> 100 (approx 1.8s), then fade overlay out
+      if (isMobile) {
+        const mobileTl = gsap.timeline({
+          onComplete: () => {
+            gsap.to(loaderRef.current, { opacity: 0, duration: 0.4, onComplete: () => setLoading(false) });
+          }
+        });
+        mobileTl.to({}, { // dummy tween to drive progress
+          duration: 1.8,
+          onUpdate: function () {
+            const p = (this.progress() * 100);
+            setProgress(p);
+          }
+        });
+        return; // skip box logic
+      }
       const selectors = ["#box-tl", "#box-tr", "#box-bl", "#box-br"];
       const els = selectors
         .map((s) => document.querySelector(s))
         .filter(Boolean);
       if (els.length !== 4) {
         // Fallback: nothing to animate => remove overlay quickly
+        gsap.to(loaderRef.current, { opacity: 0, duration: 0.3 });
+        setProgress(100);
         setLoading(false);
         return;
       }
@@ -78,6 +99,11 @@ export default function HomeClient() {
             onComplete: () => setLoading(false),
           });
         },
+        onUpdate: () => {
+          // Map timeline progress (0-1) to 0-95 so we leave a little tail for fade-out completion
+          const p = Math.min(95, loaderTlRef.current.progress() * 100);
+          setProgress(p);
+        }
       });
 
       // Set starting invisible state at corners
@@ -143,6 +169,8 @@ export default function HomeClient() {
           1.55 + i * 0.04
         );
       });
+      // Final quick tween to push progress to 100 just before onComplete fade
+      loaderTlRef.current.to({}, { duration: 0.05, onComplete: () => setProgress(100) });
     });
 
     return () => {
@@ -521,8 +549,21 @@ export default function HomeClient() {
         <div
           id="initial-loader-bg"
           ref={loaderRef}
-          className="fixed inset-0 z-40 bg-black pointer-events-none"
-        />
+          className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-black text-white font-medium tracking-wide"
+        >
+          <div className="flex flex-col items-center gap-3">
+            <div className="text-5xl font-semibold tabular-nums">
+              {Math.round(progress)}<span className="text-lg align-top ml-1">%</span>
+            </div>
+            <div className="w-64 h-2 bg-neutral-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-purple-500 via-fuchsia-500 to-pink-500 transition-[width] duration-100 ease-linear"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-xs uppercase tracking-widest text-neutral-400">Loading experience</p>
+          </div>
+        </div>
       )}
       <div
         id="boxes"
