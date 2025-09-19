@@ -96,7 +96,7 @@ export default function HomeClient() {
             x: dx,
             y: dy,
             opacity: 1,
-            scale: .5,
+            scale: 0.5,
             rotate: 0,
             duration: 0.65,
           },
@@ -161,9 +161,11 @@ export default function HomeClient() {
     }
     // Animate the 4 corner boxes into a centered inline row while scrolling
     // Hold references to refresh handlers so we can remove listeners on cleanup
-    let refreshPositionsRef;
-    let refreshPositions5Ref;
-    let refreshPositions4Ref;
+    // Separate refresh refs per section to avoid overwriting & leaked listeners
+    let refreshPositionsSection2Ref;
+    let refreshPositionsSection3Ref;
+    let refreshPositionsSection4Ref;
+    let refreshPositionsSection5Ref;
 
     const ctx = gsap.context(() => {
       const boxes = ["#box-tl", "#box-tr", "#box-bl", "#box-br"];
@@ -238,7 +240,7 @@ export default function HomeClient() {
       // Recompute on resize/refresh
       ScrollTrigger.addEventListener("refreshInit", refreshPositions);
       window.addEventListener("resize", ScrollTrigger.refresh);
-      refreshPositionsRef = refreshPositions;
+      refreshPositionsSection2Ref = refreshPositions;
 
       // Section 3: arrange boxes into a centered 2x2 grid
       const tl5 = gsap.timeline({
@@ -310,7 +312,7 @@ export default function HomeClient() {
 
       refreshPositions5();
       ScrollTrigger.addEventListener("refreshInit", refreshPositions5);
-      refreshPositions5Ref = refreshPositions5;
+      refreshPositionsSection3Ref = refreshPositions5;
 
       // Section 4: scale to 50% and arrange in a 1-2-1 grid
       const tl4 = gsap.timeline({
@@ -387,10 +389,15 @@ export default function HomeClient() {
 
       refreshPositions4();
       ScrollTrigger.addEventListener("refreshInit", refreshPositions4);
-      refreshPositions4Ref = refreshPositions4;
+      refreshPositionsSection4Ref = refreshPositions4;
 
-      // Section 5: two columns — 1 box on the left, 3 stacked on the right
-      const tl5TwoCol = gsap.timeline({
+      // Section 5: Zig-zag 4-row layout
+      // Desired final arrangement (rows top->bottom):
+      // Row 1: right side  (#box-tr)
+      // Row 2: left side   (#box-tl)
+      // Row 3: left side   (#box-bl)
+      // Row 4: right side  (#box-br)
+      const tl5ZigZag = gsap.timeline({
         defaults: { ease: "Power1.ease" },
         scrollTrigger: {
           trigger: "#section5",
@@ -402,56 +409,31 @@ export default function HomeClient() {
         },
       });
 
-      // Compute responsive positions aligned to the content container edges
-      const calcOneLeftThreeRightPositions = () => {
-        const ref = document.querySelector("#box-tl");
-        // Respect current scale from previous sections
-        const sw = ref ? ref.getBoundingClientRect().width : boxWidth * 0.5;
-        const maxW = 1280; // ~ tailwind max-w-7xl
+      const scaleZig = 0.7; // final scale for Section 5
+
+      const calcZigZagPositions = () => {
+        const maxW = 1280; // tailwind max-w-7xl equivalent
         const pad = window.innerWidth >= 768 ? 40 : 24; // md:px-10 vs px-6
         const containerInset = (vw() - Math.min(vw(), maxW)) / 2;
-        const leftContentX = Math.max(0, containerInset + pad);
+        const leftX = Math.max(0, containerInset + pad);
+        const rightX =
+          vw() - Math.max(0, containerInset + pad) - boxWidth * scaleZig;
 
-        const hasOuterMargin = containerInset > 0;
-        const rightEdgeMargin = 16; // small gap from container edge/viewport
-        const rightColumnXInMargin =
-          vw() - containerInset - sw - rightEdgeMargin;
-
-        // Right column: three stacked boxes, vertically centered in viewport
-        const totalRightH = 3 * sw + 2 * gap;
-        const startRightY = (vh() - totalRightH) / 2;
-
-        if (hasOuterMargin) {
-          const rightContentX = rightColumnXInMargin;
-          const rightY = [
-            startRightY,
-            startRightY + (sw + gap),
-            startRightY + 2 * (sw + gap),
-          ];
-          const leftY = startRightY + (totalRightH - sw) / 2;
-          return {
-            mode: "two-col",
-            left: { x: leftContentX, y: leftY },
-            rightTop: { x: rightContentX, y: rightY[0] },
-            rightMid: { x: rightContentX, y: rightY[1] },
-            rightBot: { x: rightContentX, y: rightY[2] },
-          };
-        }
-
-        // Fallback (no outer margin): stack all 4 on the left to keep form readable
-        const totalLeftH = 4 * sw + 3 * gap;
-        const startLeftY = (vh() - totalLeftH) / 2;
+        // Use base boxWidth * scale for consistent spacing (independent of prior scale 0.5 in Section 4)
+        const sw = boxWidth * scaleZig;
+        const totalHeight = 4 * sw + 3 * gap;
+        const startY = (vh() - totalHeight) / 2;
         return {
-          mode: "left-stack",
-          l1: { x: leftContentX, y: startLeftY + 0 * (sw + gap) },
-          l2: { x: leftContentX, y: startLeftY + 1 * (sw + gap) },
-          l3: { x: leftContentX, y: startLeftY + 2 * (sw + gap) },
-          l4: { x: leftContentX, y: startLeftY + 3 * (sw + gap) },
+          row1Right: { x: rightX, y: startY + 1 * (sw + gap) },
+          row2Left: { x: leftX, y: startY + 1 * (sw + gap) },
+          row3Left: { x: leftX, y: startY + 2 * (sw + gap) },
+          row4Right: { x: rightX, y: startY + 2 * (sw + gap) },
+          metrics: { sw },
         };
       };
 
-      const applyToBox5TwoCol = (selector, x, y) => {
-        tl5TwoCol.to(
+      const applyToBox5Zig = (selector, x, y) => {
+        tl5ZigZag.to(
           selector,
           {
             x: () => {
@@ -466,44 +448,67 @@ export default function HomeClient() {
               const dy = y - rect.top;
               return `+=${dy}`;
             },
-            scale: 0.7,
+            scale: scaleZig,
             transformOrigin: "top left",
           },
           0
         );
       };
 
-      const refreshPositions5TwoCol = () => {
-        const pos = calcOneLeftThreeRightPositions();
-        tl5TwoCol.clear();
-        if (pos.mode === "two-col") {
-          applyToBox5TwoCol("#box-tl", pos.left.x, pos.left.y);
-          applyToBox5TwoCol("#box-tr", pos.rightTop.x, pos.rightTop.y);
-          applyToBox5TwoCol("#box-bl", pos.rightMid.x, pos.rightMid.y);
-          applyToBox5TwoCol("#box-br", pos.rightBot.x, pos.rightBot.y);
-        } else {
-          // left-stack fallback for narrow screens
-          applyToBox5TwoCol("#box-tl", pos.l1.x, pos.l1.y);
-          applyToBox5TwoCol("#box-tr", pos.l2.x, pos.l2.y);
-          applyToBox5TwoCol("#box-bl", pos.l3.x, pos.l3.y);
-          applyToBox5TwoCol("#box-br", pos.l4.x, pos.l4.y);
+      const refreshPositions5Zig = () => {
+        // Narrow screen fallback: stack vertically on left
+        if (window.innerWidth < 768) {
+          const maxW = 1280;
+          const pad = 24;
+          const containerInset = (vw() - Math.min(vw(), maxW)) / 2;
+          const leftX = Math.max(0, containerInset + pad);
+          const sw = boxWidth * scaleZig;
+          const totalH = 4 * sw + 3 * gap;
+          const startY = (vh() - totalH) / 2;
+          tl5ZigZag.clear();
+          ["#box-tr", "#box-tl", "#box-bl", "#box-br"].forEach((sel, i) => {
+            applyToBox5Zig(sel, leftX, startY + i * (sw + gap));
+          });
+          return;
         }
+        const pos = calcZigZagPositions();
+        tl5ZigZag.clear();
+        // Mapping defined above
+        applyToBox5Zig("#box-tr", pos.row1Right.x, pos.row1Right.y); // row 1 right
+        applyToBox5Zig("#box-tl", pos.row2Left.x, pos.row2Left.y); // row 2 left
+        applyToBox5Zig("#box-bl", pos.row3Left.x, pos.row3Left.y); // row 3 left
+        applyToBox5Zig("#box-br", pos.row4Right.x, pos.row4Right.y); // row 4 right
       };
 
-      refreshPositions5TwoCol();
-      ScrollTrigger.addEventListener("refreshInit", refreshPositions5TwoCol);
-      refreshPositions5Ref = refreshPositions5TwoCol;
+      refreshPositions5Zig();
+      ScrollTrigger.addEventListener("refreshInit", refreshPositions5Zig);
+      refreshPositionsSection5Ref = refreshPositions5Zig;
     });
 
     return () => {
-      if (refreshPositionsRef) {
-        ScrollTrigger.removeEventListener("refreshInit", refreshPositionsRef);
+      if (refreshPositionsSection2Ref) {
+        ScrollTrigger.removeEventListener(
+          "refreshInit",
+          refreshPositionsSection2Ref
+        );
       }
-      if (refreshPositions5Ref) {
-        ScrollTrigger.removeEventListener("refreshInit", refreshPositions5Ref);
+      if (refreshPositionsSection3Ref) {
+        ScrollTrigger.removeEventListener(
+          "refreshInit",
+          refreshPositionsSection3Ref
+        );
       }
-      if (refreshPositions4Ref) {
-        ScrollTrigger.removeEventListener("refreshInit", refreshPositions4Ref);
+      if (refreshPositionsSection4Ref) {
+        ScrollTrigger.removeEventListener(
+          "refreshInit",
+          refreshPositionsSection4Ref
+        );
+      }
+      if (refreshPositionsSection5Ref) {
+        ScrollTrigger.removeEventListener(
+          "refreshInit",
+          refreshPositionsSection5Ref
+        );
       }
       window.removeEventListener("resize", ScrollTrigger.refresh);
       ctx.revert();
@@ -525,10 +530,10 @@ export default function HomeClient() {
       >
         <div
           id="box-tl"
-          className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center overflow-hidden "
         >
           <Image
-            className=" object-cover rounded-3xl"
+            className="shiny-border border-4 object-cover rounded-3xl"
             src="/1.png"
             fill
             priority
@@ -538,10 +543,10 @@ export default function HomeClient() {
         </div>
         <div
           id="box-tr"
-          className="pointer-events-auto absolute top-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute top-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center overflow-hidden "
         >
           <Image
-            className=" object-cover rounded-3xl"
+            className="shiny-border border-4 object-cover rounded-3xl"
             src="/2.png"
             fill
             sizes="(max-width: 768px) 50vw, 18rem"
@@ -550,10 +555,10 @@ export default function HomeClient() {
         </div>
         <div
           id="box-bl"
-          className="pointer-events-auto absolute bottom-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute bottom-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center overflow-hidden "
         >
           <Image
-            className=" object-cover rounded-3xl"
+            className="shiny-border border-4 object-cover rounded-3xl"
             src="/3.png"
             fill
             sizes="(max-width: 768px) 50vw, 18rem"
@@ -562,10 +567,10 @@ export default function HomeClient() {
         </div>
         <div
           id="box-br"
-          className="pointer-events-auto absolute bottom-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
+          className="pointer-events-auto absolute bottom-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center overflow-hidden "
         >
           <Image
-            className=" object-cover rounded-3xl"
+            className="shiny-border border-4 object-cover rounded-3xl"
             src="/4.png"
             fill
             sizes="(max-width: 768px) 50vw, 18rem"
