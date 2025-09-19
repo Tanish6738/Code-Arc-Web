@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/utils/gsap";
 import Image from "next/image";
 import Section1 from "@/Sections/Section1";
@@ -13,9 +13,150 @@ import Footer from "@/components/Footer";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function HomeClient() {
+  const [loading, setLoading] = useState(true);
+  const loaderTlRef = useRef(null);
+  const loaderRef = useRef(null);
+
+  // Initial 2s loading animation (independent of scroll) using the real corner boxes
   useEffect(() => {
+    if (!loading) return;
+    // Use a broad context (document) so we can target fixed-position boxes
+    const ctx = gsap.context(() => {
+      const selectors = ["#box-tl", "#box-tr", "#box-bl", "#box-br"];
+      const els = selectors
+        .map((s) => document.querySelector(s))
+        .filter(Boolean);
+      if (els.length !== 4) {
+        // Fallback: nothing to animate => remove overlay quickly
+        setLoading(false);
+        return;
+      }
+
+      // Measure viewport to compute centered 2x2 grid positions
+      const vw = () => window.innerWidth;
+      const vh = () => window.innerHeight;
+      const gap = 32; // space between boxes in loader grid
+
+      // Use their natural size (tailwind w-72 h-72); measure first element for safety
+      const rect = els[0].getBoundingClientRect();
+      const bw = rect.width;
+      const bh = rect.height;
+      const totalW = 2 * bw + gap;
+      const totalH = 2 * bh + gap;
+      const startX = (vw() - totalW) / 2;
+      const startY = (vh() - totalH) / 2;
+      const targetPositions = [
+        { x: startX, y: startY }, // tl
+        { x: startX + bw + gap, y: startY }, // tr
+        { x: startX, y: startY + bh + gap }, // bl
+        { x: startX + bw + gap, y: startY + bh + gap }, // br
+      ];
+
+      // Current corner positions (absolute top/left already placed via classes)
+      const initialRects = els.map((el) => el.getBoundingClientRect());
+
+      loaderTlRef.current = gsap.timeline({
+        defaults: { ease: "power3.out" },
+        onComplete: () => {
+          // Fade out overlay then clear inline transforms so scroll animations start fresh
+          if (loaderRef.current) {
+            gsap.to(loaderRef.current, {
+              opacity: 0,
+              duration: 0.4,
+              pointerEvents: "none",
+            });
+          }
+          // Return boxes to their corner baseline (translate 0) instantly but after slight delay for visual polish
+          gsap.to(els, {
+            x: 0,
+            y: 0,
+            rotate: 0,
+            scale: 1,
+            boxShadow: "none",
+            delay: 0.25,
+            clearProps: "transform,boxShadow",
+            onComplete: () => setLoading(false),
+          });
+        },
+      });
+
+      // Set starting invisible state at corners
+      // Start hidden then fade/scale in as they travel to center
+      loaderTlRef.current.set(els, { opacity: 0, scale: 0.6, rotate: -6 });
+
+      // Move them to centered grid while fading/scaling in
+      selectors.forEach((sel, i) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        const dx = targetPositions[i].x - initialRects[i].left;
+        const dy = targetPositions[i].y - initialRects[i].top;
+        loaderTlRef.current.to(
+          el,
+          {
+            x: dx,
+            y: dy,
+            opacity: 1,
+            scale: .5,
+            rotate: 0,
+            duration: 0.65,
+          },
+          i * 0.08
+        );
+      });
+
+      // Add a subtle pulse + glow wave
+      loaderTlRef.current.to(
+        els,
+        {
+          // boxShadow: '0 0 32px -4px rgba(255,255,255,0.25)',
+          duration: 1.5,
+          stagger: { each: 0.07, from: "center" },
+        },
+        0.4
+      );
+      loaderTlRef.current
+        .to(
+          els,
+          {
+            y: (i) => (i % 2 === 0 ? "-12" : "12"),
+            scale: 0.95,
+            duration: 0.7,
+            ease: "sine.inOut",
+          },
+          0.75
+        )
+        .to(els, { y: 0, scale: 1, duration: 0.5, ease: "sine.out" }, 1.35);
+
+      // Return them back to corners (reverse path) before overlay fades
+      // Slightly longer pause (0.2s) after pulse before returning
+      selectors.forEach((sel, i) => {
+        const el = document.querySelector(sel);
+        if (!el) return;
+        loaderTlRef.current.to(
+          el,
+          {
+            x: 0,
+            y: 0,
+            duration: 0.45,
+            ease: "power2.inOut",
+          },
+          1.55 + i * 0.04
+        );
+      });
+    });
+
+    return () => {
+      ctx.revert();
+      if (loaderTlRef.current) loaderTlRef.current.kill();
+    };
+  }, [loading]);
+  useEffect(() => {
+    if (loading) return; // wait for loader to finish
     // Skip initializing box animations on small screens
-    if (typeof window !== "undefined" && !window.matchMedia("(min-width: 768px)").matches) {
+    if (
+      typeof window !== "undefined" &&
+      !window.matchMedia("(min-width: 768px)").matches
+    ) {
       return;
     }
     // Animate the 4 corner boxes into a centered inline row while scrolling
@@ -273,7 +414,8 @@ export default function HomeClient() {
 
         const hasOuterMargin = containerInset > 0;
         const rightEdgeMargin = 16; // small gap from container edge/viewport
-        const rightColumnXInMargin = vw() - containerInset - sw - rightEdgeMargin;
+        const rightColumnXInMargin =
+          vw() - containerInset - sw - rightEdgeMargin;
 
         // Right column: three stacked boxes, vertically centered in viewport
         const totalRightH = 3 * sw + 2 * gap;
@@ -366,34 +508,69 @@ export default function HomeClient() {
       window.removeEventListener("resize", ScrollTrigger.refresh);
       ctx.revert();
     };
-  }, []);
+  }, [loading]);
 
   return (
     <div>
-      <div id="boxes" className="hidden md:block fixed inset-0 z-50 select-none pointer-events-none">
+      {loading && (
+        <div
+          id="initial-loader-bg"
+          ref={loaderRef}
+          className="fixed inset-0 z-40 bg-black pointer-events-none"
+        />
+      )}
+      <div
+        id="boxes"
+        className="hidden md:block fixed inset-0 z-50 select-none pointer-events-none"
+      >
         <div
           id="box-tl"
           className="pointer-events-auto absolute top-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
-          <Image className=" object-cover rounded-3xl" src="/1.png" fill alt="CodeARC platform preview – feature card 1" />
+          <Image
+            className=" object-cover rounded-3xl"
+            src="/1.png"
+            fill
+            priority
+            sizes="(max-width: 768px) 50vw, 18rem"
+            alt="CodeARC platform preview – feature card 1"
+          />
         </div>
         <div
           id="box-tr"
           className="pointer-events-auto absolute top-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
-          <Image className=" object-cover rounded-3xl" src="/2.png" fill alt="CodeARC UI showcase – feature card 2" />
+          <Image
+            className=" object-cover rounded-3xl"
+            src="/2.png"
+            fill
+            sizes="(max-width: 768px) 50vw, 18rem"
+            alt="CodeARC UI showcase – feature card 2"
+          />
         </div>
         <div
           id="box-bl"
           className="pointer-events-auto absolute bottom-4 left-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
-          <Image className=" object-cover rounded-3xl" src="/3.png" fill alt="Developer workflow illustration – feature card 3" />
+          <Image
+            className=" object-cover rounded-3xl"
+            src="/3.png"
+            fill
+            sizes="(max-width: 768px) 50vw, 18rem"
+            alt="Developer workflow illustration – feature card 3"
+          />
         </div>
         <div
           id="box-br"
           className="pointer-events-auto absolute bottom-4 right-4 w-72 h-72 rounded-3xl shadow-lg flex justify-center items-center"
         >
-          <Image className=" object-cover rounded-3xl" src="/4.png" fill alt="Team collaboration concept art – feature card 4" />
+          <Image
+            className=" object-cover rounded-3xl"
+            src="/4.png"
+            fill
+            sizes="(max-width: 768px) 50vw, 18rem"
+            alt="Team collaboration concept art – feature card 4"
+          />
         </div>
       </div>
       <Section1 />
